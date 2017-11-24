@@ -18,6 +18,7 @@ class If(object):
         self.branch_to_else = branch_to_else
         self.branch_to_end = branch_to_end
 
+
 if __name__ == '__main__':
     file = open('examples/ifs.s')
 
@@ -71,17 +72,23 @@ if __name__ == '__main__':
         branch.label = label
 
         """ 
-            Assumption: In loops the label branching statement refers to 
-            is located above the branching statement
-            In if statements the label of branching statement refers to is located below the branching statement
+            Assumption: In "loops" the label branching statement refers to 
+            is located "above" the branching statement
+            Assumption: In "if" statements the label of branching statement refers to 
+            is located "below" the branching statement
         """
         if label.line_no < branch.line_no:
             loops.append(Loop(label, branch, cmp))
         else:
-            branch2End = branches_line_no[label.line_no - 1]
-            label2End = labels_by_name[branch2End.label_text]
-            ifs.append(If(cmp, label, label2End, branch, branch2End))
 
+            if "label.line_no - 1" in branches_line_no.keys():
+                # if and else block
+                branch2End = branches_line_no[label.line_no - 1]
+                label2End = labels_by_name[branch2End.label_text]
+                ifs.append(If(cmp, label, label2End, branch, branch2End))
+            else:
+                # if only blocks
+                ifs.append(If(cmp, label, None, None, branch))
 
     for loop in loops:
         print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))

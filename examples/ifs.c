@@ -4,7 +4,6 @@ void main() {
 
     if(a > 1) {
        a = 24;
-    } else {
-        a = 124;
     }
+
 }

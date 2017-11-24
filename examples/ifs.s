@@ -31,14 +31,10 @@ main:
 	str	r3, [r7, #4]
 	ldr	r3, [r7]
 	cmp	r3, #1
-	ble	.L2
+	ble	.L3
 	movs	r3, #24
 	str	r3, [r7]
-	b	.L4
-.L2:
-	movs	r3, #124
-	str	r3, [r7]
-.L4:
+.L3:
 	nop
 	adds	r7, r7, #12
 	mov	sp, r7
