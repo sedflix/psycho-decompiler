@@ -2,6 +2,7 @@
 
 """
 
+# TODO: make this list complete [exclude stuffs ending with 's']
 conditionals = [
     "cmp",
     "cmn",
@@ -18,16 +19,18 @@ class CMP(object):
 
 class Branch(object):
     def __init__(self, line_no, text, label=None):
+        text = text.strip()
         self.line_no = line_no
         self.text = text
-        self.label_text = str.split(text, " ")[1].replace(".", "").strip()
+        # dealing with space
+        self.label_text = text[text.rfind(" ") - 2:]
         self.label = label
 
 
 class Label(object):
     def __init__(self, line_no, text):
         self.line_no = line_no
-        self.text = text.replace(":", "").replace(".", "")
+        self.text = text.replace(":", "")
 
 
 def isLabel(text):
@@ -37,13 +40,14 @@ def isLabel(text):
 
 def isConditional(text):
     text = getOpcode(text)
-    if text.endswith("s"):
-        return True
+    # if text.endswith("s"):
+    #     return True
     if text in conditionals:
         return True
     return False
 
 
+# TODO: make this more robust
 def isBranching(text):
     if text.strip().startswith("b"):
         return True
@@ -52,4 +56,7 @@ def isBranching(text):
 
 def getOpcode(text):
     text = text.strip()
-    return text[0: text.find(" ") + 1].strip()
+    a = text.find(" ")
+    b = text.find("\t")
+    if a > b: a = b
+    return text[0:a + 1].strip()

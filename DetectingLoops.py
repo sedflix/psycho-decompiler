@@ -30,6 +30,7 @@ if __name__ == '__main__':
         if isLabel(line):
             label = Label(i, line)
             labels_by_name[label.text] = label
+            print(label.text)
             labels_by_line_no[i] = label
         elif isConditional(line):
             cmps.append(CMP(i, line))
@@ -54,6 +55,7 @@ if __name__ == '__main__':
     for cmp in cmps:
 
         cmp_line_no = cmp.line_no
+        print(cmp.text)
         branch = branches_line_no[cmp_line_no + 1]
         label = labels_by_name[branch.label_text]
         branch.label = label
