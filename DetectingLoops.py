@@ -1,24 +1,5 @@
 from utill import *
 
-
-class Loop(object):
-    def __init__(self, label, branch, cmp):
-        self.label = label
-        self.branch = branch
-        self.cmp = cmp
-        self.enterNode = label.line_no
-        self.exitNode = branch.line_no
-
-
-class If(object):
-    def __init__(self, cmp, label_else, label_end, branch_to_else, branch_to_end):
-        self.cmp = cmp
-        self.label_else = label_else
-        self.label_end = label_end
-        self.branch_to_else = branch_to_else
-        self.branch_to_end = branch_to_end
-
-
 if __name__ == '__main__':
     file = open('examples/ifs.s')
 
@@ -49,6 +30,7 @@ if __name__ == '__main__':
 
     loops = []
     ifs = []
+    ifelses = []
 
     """
         Now I will try to describe this really stupid algorithm.
@@ -77,23 +59,50 @@ if __name__ == '__main__':
             Assumption: In "if" statements the label of branching statement refers to 
             is located "below" the branching statement
         """
-        if label.line_no < branch.line_no:
-            loops.append(Loop(label, branch, cmp))
-        else:
 
-            if "label.line_no - 1" in branches_line_no.keys():
+        if label.line_no < branch.line_no:
+            # for loops
+            loops.append(Loop(label, branch, cmp))
+
+        else:
+            # for different kinds of if blocks
+
+            """
+                Shitty yet a working way to know if the conditional block is if or if-else block
+                
+                Assumption: If the label has a line before it which is branching statement, then it is a if-else block.
+                Like: 
+                	 b	.L4
+                    .L3:
+                is sign of an if else statement
+                
+                    >any statement other than branch>
+                .L4
+                
+                is a sign that  .L4 is the ending label
+                    
+            """
+            if label.line_no - 1 in branches_line_no.keys():
                 # if and else block
-                branch2End = branches_line_no[label.line_no - 1]
-                label2End = labels_by_name[branch2End.label_text]
-                ifs.append(If(cmp, label, label2End, branch, branch2End))
+
+                branch2End = branches_line_no[label.line_no - 1]  # branch statement in block one that leads to end
+                label2End = labels_by_name[branch2End.label_text]  # label at which everything ends
+
+                ifelses.append(IfElse(cmp=cmp, branch_to_2nd_block=branch,
+                                      branch_to_end=branch2End, block2_label=label, end_label=label2End))
             else:
                 # if only blocks
-                ifs.append(If(cmp, label, None, None, branch))
+
+                ifs.append(If(cmp=cmp, branch_to_end=branch, end_label=label))
 
     for loop in loops:
         print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))
 
     for If in ifs:
-        print(If)
+        print("Enter at " + str(If.block1_start_line) + " and exits at " + str(If.block1_end_line))
+
+    for ifelse in ifelses:
+        print("If enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block1_end_line) +
+              " -- Else enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block2_end_line))
 
     file.close()
