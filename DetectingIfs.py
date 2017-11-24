@@ -1,2 +1,0 @@
-class If(object):
-    pass

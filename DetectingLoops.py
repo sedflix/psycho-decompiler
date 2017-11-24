@@ -10,8 +10,16 @@ class Loop(object):
         self.exitNode = branch.line_no
 
 
+class If(object):
+    def __init__(self, cmp, label_else, label_end, branch_to_else, branch_to_end):
+        self.cmp = cmp
+        self.label_else = label_else
+        self.label_end = label_end
+        self.branch_to_else = branch_to_else
+        self.branch_to_end = branch_to_end
+
 if __name__ == '__main__':
-    file = open('examples/loops3.s')
+    file = open('examples/ifs.s')
 
     labels_by_name = dict()
     labels_by_line_no = dict()
@@ -30,7 +38,6 @@ if __name__ == '__main__':
         if isLabel(line):
             label = Label(i, line)
             labels_by_name[label.text] = label
-            print(label.text)
             labels_by_line_no[i] = label
         elif isConditional(line):
             cmps.append(CMP(i, line))
@@ -40,6 +47,7 @@ if __name__ == '__main__':
             branches_line_no[i] = branch
 
     loops = []
+    ifs = []
 
     """
         Now I will try to describe this really stupid algorithm.
@@ -51,11 +59,13 @@ if __name__ == '__main__':
         The label tells us the entry point of the loop.
         
     """
-    # TODO: This will tells if statements are loop. sometimes. IDK. haven't thought about it or event tried testing it
+
+    # TODO: This will most probably tells if statements are loop. sometimes.
+    # IDK. haven't thought about it or event tried testing it
+
     for cmp in cmps:
 
         cmp_line_no = cmp.line_no
-        print(cmp.text)
         branch = branches_line_no[cmp_line_no + 1]
         label = labels_by_name[branch.label_text]
         branch.label = label
@@ -63,11 +73,20 @@ if __name__ == '__main__':
         """ 
             Assumption: In loops the label branching statement refers to 
             is located above the branching statement
+            In if statements the label of branching statement refers to is located below the branching statement
         """
         if label.line_no < branch.line_no:
             loops.append(Loop(label, branch, cmp))
+        else:
+            branch2End = branches_line_no[label.line_no - 1]
+            label2End = labels_by_name[branch2End.label_text]
+            ifs.append(If(cmp, label, label2End, branch, branch2End))
+
 
     for loop in loops:
         print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))
+
+    for If in ifs:
+        print(If)
 
     file.close()
