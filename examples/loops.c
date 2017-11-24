@@ -1,29 +1,27 @@
 void main() {
+    int i = 0;
+    int j = 0;
 
-    int c = 0;
-//    for (int i = 0; i<10; i++) {
-//        c++;
-//    }
+    int k = 56;
 
-    int d=0;
-    while(c<20) {
-      while(d<50) {
-        d =  d + 1;
-        c = c + 1;
-        int k = 124;
-        double sd  = 1234;
-      }
-        c++;
+
+    while(i<10) {
+
+
+        while(j < 3) {
+            k = k + 1;
+
+            j = j + 1;
+
+                while( k < 100) {
+                    k = k +1;
+                    j=j+1;
+                    int w = 23234;
+                }
+        }
+
+        i = i + 1;
+
     }
-
-//    do {
-//        c++;
-//    }while(c<40);
-
-//    if(c > 60) {
-//        c ++;
-//    } else {
-//        c--;
-//    }
 }
 

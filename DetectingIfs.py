@@ -1,0 +1,2 @@
+class If(object):
+    pass

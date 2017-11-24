@@ -1,20 +1,4 @@
-class CMP(object):
-    def __init__(self, line_no, text):
-        self.line_no = line_no
-        self.text = text
-
-class Branch(object):
-    def __init__(self, line_no, text, label=None):
-        self.line_no = line_no
-        self.text = text
-        self.label_text = str.split(text, "\t")[1].replace(".", "").strip()
-        self.label = label
-
-
-class Label(object):
-    def __init__(self, line_no, text):
-        self.line_no = line_no
-        self.text = text.replace(":", "").replace(".","")
+from utill import *
 
 
 class Loop(object):
@@ -26,11 +10,6 @@ class Loop(object):
         self.exitNode = branch.line_no
 
 
-def isLabel(text):
-    if text.endswith(":"):
-        return True
-
-
 if __name__ == '__main__':
     file = open('examples/loops3.s')
 
@@ -40,35 +19,51 @@ if __name__ == '__main__':
     branches_line_no = dict()
     branches_label = dict()
 
-
     i = 0
     while True:
-        line = file.readline().strip()
+        line = file.readline().strip().lower()
         if line is '':
             break
 
         i += 1
 
         if isLabel(line):
-            label = Label(i,line)
+            label = Label(i, line)
             labels_by_name[label.text] = label
             labels_by_line_no[i] = label
-        elif line.startswith('cmp'):
-            cmps.append(CMP(i,line))
-        elif line.startswith('b'):
+        elif isConditional(line):
+            cmps.append(CMP(i, line))
+        elif isBranching(line):
             branch = Branch(i, line)
             branches_label[branch.label_text] = branch
             branches_line_no[i] = branch
 
-
     loops = []
 
+    """
+        Now I will try to describe this really stupid algorithm.
+        If finds the compare statements first.
+        
+        Assumption: In a case of Loop the line following cmp is branch statement.
+        
+        Now we get the branch statement from line_no + 1. We extract the label from branch.
+        The label tells us the entry point of the loop.
+        
+    """
+    # TODO: This will tells if statements are loop. sometimes. IDK. haven't thought about it or event tried testing it
     for cmp in cmps:
+
         cmp_line_no = cmp.line_no
-        branch = branches_line_no[cmp_line_no+1]
+        branch = branches_line_no[cmp_line_no + 1]
         label = labels_by_name[branch.label_text]
         branch.label = label
-        loops.append(Loop(label, branch, cmp))
+
+        """ 
+            Assumption: In loops the label branching statement refers to 
+            is located above the branching statement
+        """
+        if label.line_no < branch.line_no:
+            loops.append(Loop(label, branch, cmp))
 
     for loop in loops:
         print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))
