@@ -76,7 +76,6 @@ class IfElse(object):
         self.end_label = end_label
 
 
-
 def isLabel(text):
     if text.strip().endswith(":"):
         return True
@@ -107,6 +106,7 @@ def getOpcode(text):
     if b > 0 and a > b: a = b
     return text[0:a + 1].strip()
 
+
 def getArgs(text):
     text = text.strip(" ")
     text = text.strip("\t")
@@ -116,7 +116,8 @@ def getArgs(text):
     args = text[a + 1:].strip()
     args = args.split(",")
     return args
-    
+
+
 def getOpDesc(text):
     text = text.upper()
     args = getArgs(text)
