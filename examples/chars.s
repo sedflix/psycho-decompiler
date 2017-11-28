@@ -19,8 +19,6 @@
 	.fpu vfpv3-d16
 	.type	main, %function
 main:
-	@ args = 0, pretend = 0, frame = 8
-	@ frame_needed = 1, uses_anonymous_args = 0
 	push	{r7, lr}
 	sub	sp, sp, #8
 	add	r7, sp, #0
@@ -49,10 +47,7 @@ main:
 	.fpu vfpv3-d16
 	.type	lol, %function
 lol:
-	@ args = 0, pretend = 0, frame = 16
-	@ frame_needed = 1, uses_anonymous_args = 0
-	@ link register save eliminated.
-	push	{r7}
+	push {r7}
 	sub	sp, sp, #20
 	add	r7, sp, #0
 	mov	r3, r0
@@ -66,7 +61,6 @@ lol:
 	nop
 	adds	r7, r7, #20
 	mov	sp, r7
-	@ sp needed
 	ldr	r7, [sp], #4
 	bx	lr
 	.size	lol, .-lol

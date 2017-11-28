@@ -20,9 +20,9 @@
 	.type	main, %function
 main:
 	@ args = 0, pretend = 0, frame = 16
-	@ frame_needed = 1, uses_anonymous_args = 0
+	@ frame_needed = 1, uses_anonymou	push	{r7}s_args = 0
 	@ link register save eliminated.
-	push	{r7}
+
 	sub	sp, sp, #20
 	add	r7, sp, #0
 	movs	r3, #0

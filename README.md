@@ -9,3 +9,5 @@ Stuff to keep in mind
 - differentiate between float, int, long char, double
 - identify function
 - 
+
+r7 is frame pointer

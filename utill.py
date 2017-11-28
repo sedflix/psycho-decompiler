@@ -103,7 +103,7 @@ def getOpcode(text):
     text = text.strip("\t")
     a = text.find(" ")
     b = text.find("\t")
-    if b > 0 and a > b: a = b
+    if (b > 0 and a > b): a = b
     return text[0:a + 1].strip()
 
 
