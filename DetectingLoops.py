@@ -1,7 +1,7 @@
 from utill import *
 
 if __name__ == '__main__':
-    file = open('examples/ifs.s')
+    file = open('examples/sampleinput.s')
 
     labels_by_name = dict()
     labels_by_line_no = dict()

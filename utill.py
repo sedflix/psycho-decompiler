@@ -86,6 +86,7 @@ def isConditional(text):
     text = getOpcode(text)
     # if text.endswith("s"):
     #     return True
+    print(text)
     if text in conditionals:
         return True
     return False
