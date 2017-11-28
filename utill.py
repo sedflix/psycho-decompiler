@@ -100,8 +100,39 @@ def isBranching(text):
 
 
 def getOpcode(text):
-    text = text.strip()
+    text = text.strip(" ")
+    text = text.strip("\t")
     a = text.find(" ")
     b = text.find("\t")
-    if a > b: a = b
+    if b > 0 and a > b: a = b
     return text[0:a + 1].strip()
+
+def getArgs(text):
+    text = text.strip(" ")
+    text = text.strip("\t")
+    a = text.find(" ")
+    b = text.find("\t")
+    if b > 0 and a > b: a = b
+    args = text[a + 1:].strip()
+    args = args.split(",")
+    return args
+    
+def getOpDesc(text):
+    text = text.upper()
+    args = getArgs(text)
+    if getOpcode(text) == "ADD":
+        print(str(args[0]) + " = " + str(args[1]) + " + " + str(args[2]))
+    elif getOpcode(text) == "SUB":
+        print(str(args[0]) + " = " + str(args[1]) + " - " + str(args[2]))
+    elif getOpcode(text) == "RSB":
+        print(str(args[0]) + " = " + str(args[2]) + " - " + str(args[1]))
+    elif getOpcode(text) == "AND":
+        print(str(args[0]) + " = " + str(args[1]) + " && " + str(args[2]))
+    elif getOpcode(text) == "ORR":
+        print(str(args[0]) + " = " + str(args[1]) + " || " + str(args[2]))
+    elif getOpcode(text) == "MOV":
+        print(str(args[0]) + " = " + str(args[1]))
+    elif getOpcode(text) == "STR":
+        print(str(args[1]) + " = " + str(args[0]))
+    elif getOpcode(text) == "LDR":
+        print(str(args[0]) + " = " + str(args[1]))
