@@ -21,19 +21,19 @@ class Function(object):
 
 
 # stuff to which values are assigned
-def getRHS(lines, f):
+def getRHS(lines, f, before=False):
     rhs = dict()
     for i in range(f.start_line_no + 1, f.end_line_no):
         opcode = getOpcode(lines[i])
         if "ldr" in opcode:
-            if not getArgs(lines[i])[0] in rhs.keys():
+            if not getArgs(lines[i])[0] in rhs.keys() or before:
                 rhs[getArgs(lines[i])[0]] = i
         elif "mov" in opcode:
-            if not getArgs(lines[i])[0] in rhs.keys():
+            if not getArgs(lines[i])[0] in rhs.keys() or before:
                 rhs[getArgs(lines[i])[0]] = i
         elif not "str" in opcode:
             try:
-                if not getArgs(lines[i])[0] in rhs.keys():
+                if not getArgs(lines[i])[0] in rhs.keys() or before:
                     rhs[getArgs(lines[i])[0]] = i
             except Exception:
                 pass
@@ -107,7 +107,6 @@ if __name__ == '__main__':
 
     for i in range(len(lines.keys())):
         if isLabel(lines[i]):
-            print(lines[i])
             if getOpcode(lines[i + 1]) == "push" and getOpcode(lines[i + 2]) == "sub":
                 x = getArgs(lines[i + 2])
                 print("start @" + lines[i])
@@ -116,7 +115,7 @@ if __name__ == '__main__':
                     if getOpcode(lines[j]) == "adds":
                         y = getArgs(lines[j])
                         if x[2] == y[2]:
-                            print("ends @" + lines[j])
+                            print("ends @" + lines[j + 1])
                             break
                 functions.append(Function(
                     name=lines[i].replace(":", ""), start_line_text=lines[i + 1], start_line_no=i + 1,
@@ -140,6 +139,7 @@ if __name__ == '__main__':
                 while str for other type of data
                 
             """
+
             if "str" in opcode:
 
                 """
@@ -165,7 +165,6 @@ if __name__ == '__main__':
                 elif opcode == "str":
                     f.parameters_type.append("int")
             elif "mov" in opcode:
-                print(lines[i])
                 """
                     This is too check if the  parameter/register 
                     has been used before this line in function.
@@ -183,7 +182,31 @@ if __name__ == '__main__':
                 f.parameters.append(getArgs(lines[i])[1])
                 f.parameters_type.append("int")
 
+    """
+        Callers 
+    """
     for i in range(len(lines.keys())):
         if "bl" in lines[i]:
-            # it will branch to a function. Add as a calle
-            pass
+            label = getArgs(lines[i])[0].split("(")[0]
+
+            for f in functions:
+                if f.name == label:
+                    f.callers_line_no.append(i)
+
+    for f in functions:
+        """
+                finding return type of each function
+        """
+
+        rhs = getRHS(lines, f, before=True)
+
+        a = -1
+        if "s0" in rhs.keys():
+            if rhs["s0"] > a: a = rhs["s0"]
+        if "r0" in rhs.keys():
+            if rhs["r0"] > a: a = rhs["r0"]
+        if "d0" in rhs.keys():
+            if rhs["d0"] > a: a = rhs["d0"]
+
+        print(a)
+        print(lines[a])
