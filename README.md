@@ -10,4 +10,4 @@ Stuff to keep in mind
 - identify function
 - 
 
-r7 is frame pointer
+r7 is frame pointerSupport basic SWI instructions: Read, Print, Exit etc

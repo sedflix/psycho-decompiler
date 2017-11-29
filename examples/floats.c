@@ -1,18 +1,16 @@
-void main(){
-       float a = 1;
-       float b = 1.0;
-       float c = 214.124;
-       float d = 00.1;
+float add(float a, float b, float c, float d, float e) {
 
-
-       float k = a + b;
-
-
-       add(c,d);
+    c = a + b;
+    return c;
 }
 
 
-void add(float a, float b) {
-    float c;
-    c = a + b;
+void main(){
+    double a = 5.235;
+    double b = 6.3254;
+
+    double c = a + b;
+    double k = 232.2432;
+
+    float we = add(a,b,c,k,a);
 }
