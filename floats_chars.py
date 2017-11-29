@@ -41,7 +41,7 @@ def getRHS(lines, f, before=False):
 
 
 if __name__ == '__main__':
-    file = open('examples/floats.s')
+    file = open('examples/chars.s')
 
     labels_by_name = dict()
     labels_by_line_no = dict()
@@ -198,15 +198,46 @@ if __name__ == '__main__':
                 finding return type of each function
         """
 
-        rhs = getRHS(lines, f, before=True)
+        for i in range(f.end_line_no, f.start_line_no, -1):
 
-        a = -1
-        if "s0" in rhs.keys():
-            if rhs["s0"] > a: a = rhs["s0"]
-        if "r0" in rhs.keys():
-            if rhs["r0"] > a: a = rhs["r0"]
-        if "d0" in rhs.keys():
-            if rhs["d0"] > a: a = rhs["d0"]
+            if len(f.return_) > 0 or isBranching(lines[i]):
+                break
 
-        print(a)
-        print(lines[a])
+            opcode = getOpcode(lines[i])
+
+            """
+                ASSUMPTION: return type of a function is last used with "str" or "mov"
+            """
+
+            if "ldr" in opcode:
+
+                if not getArgs(lines[i])[0].endswith("0"):
+                    continue
+
+                f.return_.append(getArgs(lines[i])[0])
+
+                if opcode == "vldr.32":
+                    f.return_type.append("float")
+                elif opcode == "ldrb":
+                    f.return_type.append("char")
+                elif opcode == "vldr.64":
+                    f.return_type.append("double")
+                elif opcode == "ldr":
+                    f.return_type.append("int")
+
+            elif "mov" in opcode:
+
+                if not getArgs(lines[i])[0].endswith("0"):
+                    continue
+
+                f.return_.append(getArgs(lines[i])[0])
+                if "f32" in opcode:
+                    f.return_type.append("float")
+                elif "f64" in opcode:
+                    f.return_type.append("double")
+                elif "b" in opcode:
+                    f.return_type.append("char")
+                else:
+                    f.return_type.append("int")
+
+        print(f.return_type)
