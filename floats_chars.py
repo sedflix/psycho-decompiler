@@ -43,6 +43,7 @@ def getRHS(lines, f, before=False):
 
 
 def getFunctions(filename):
+    global getLoopsAndIfs
     file = open(filename)
     lines = dict()
     i = 0
@@ -202,9 +203,14 @@ def getFunctions(filename):
                 elif "b" in opcode:
                     f.return_type.append("char")
                 else:
+                    # TODO Detect char
                     f.return_type.append("int")
 
-        print(f.return_type)
+        print(f.return_atype)
+
+    # from DetectingLoops import *
+    # loops, ifelses, ifs = getLoopsAndIfs(filename)
+    # thingsToConsider = []
 
     for f in functions:
 
@@ -243,4 +249,4 @@ def getFunctions(filename):
 
 
 if __name__ == "__main__":
-    getFunctions("examples/floats.s")
+    getFunctions("examples/chars.s")
