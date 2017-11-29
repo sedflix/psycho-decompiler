@@ -1,4 +1,4 @@
-float add(float a, float b, float c, float d, float e) {
+float add(float a, float b, float c, float d, int e) {
 
     c = a + b;
     return c;
@@ -12,5 +12,5 @@ void main(){
     double c = a + b;
     double k = 232.2432;
 
-    float we = add(a,b,c,k,a);
+    float we = add(a,b,c,k,1);
 }

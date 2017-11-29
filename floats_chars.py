@@ -20,6 +20,26 @@ class Function(object):
         self.callers_line_no = []
 
 
+# stuff to which values are assigned
+def getRHS(lines, f):
+    rhs = dict()
+    for i in range(f.start_line_no + 1, f.end_line_no):
+        opcode = getOpcode(lines[i])
+        if "ldr" in opcode:
+            if not getArgs(lines[i])[0] in rhs.keys():
+                rhs[getArgs(lines[i])[0]] = i
+        elif "mov" in opcode:
+            if not getArgs(lines[i])[0] in rhs.keys():
+                rhs[getArgs(lines[i])[0]] = i
+        elif not "str" in opcode:
+            try:
+                if not getArgs(lines[i])[0] in rhs.keys():
+                    rhs[getArgs(lines[i])[0]] = i
+            except Exception:
+                pass
+    return rhs
+
+
 if __name__ == '__main__':
     file = open('examples/floats.s')
 
@@ -37,6 +57,10 @@ if __name__ == '__main__':
         line = file.readline().strip().lower()
         if line is '':
             break
+        # if not (line.startswith("@") or line.startswith(".")):
+        #     lines[i] = line
+        # else:
+        #     i = i - 1
         lines[i] = line
 
         if getOpcode(line) == "str" and getOpcode(lines[i - 1]) == 'movt' and getOpcode(lines[i - 2]) == 'movw':
@@ -101,30 +125,63 @@ if __name__ == '__main__':
             pass
 
     for f in functions:
-        rhs = dict()
-        lhs = dict()
+        """
+                finding parameters of each function
+        """
+        rhs = getRHS(lines, f)
+
         for i in range(f.start_line_no, f.end_line_no):
-            try:
-                params = getArgs(lines[i])
-                if not params[0] in lhs.keys():
-                    lhs[params[0].strip()] = i
-                if not params[1] in rhs.keys():
-                    rhs[params[1].strip()] = i
-                if not params[2] in rhs.keys():
-                    rhs[params[1].strip()] = i
-            except Exception:
-                continue
-        # print(rhs)
-        # print(lhs)
 
-        for var in lhs.keys():
-            try:
-                if lhs[var] < rhs[var]:
-                    print(var)
-            except Exception:
-                print("err " + var)
-                continue
+            opcode = getOpcode(lines[i])
 
+            """
+                ASSUMPTION: each argument of a function is first used with "str" or "mov"
+                int are usually stored with mov
+                while str for other type of data
+                
+            """
+            if "str" in opcode:
+
+                """
+                    This is too check if the  parameter/register 
+                    has been used before this line in function.
+                    
+                    z = a
+                    to filter "a" which hasn't been initialised before
+                """
+                if getArgs(lines[i])[0] in rhs.keys():
+                    if rhs[getArgs(lines[i])[0]] >= i:
+                        pass
+                    else:
+                        break
+
+                f.parameters.append(getArgs(lines[i])[0])
+                if opcode == "vstr.32":
+                    f.parameters_type.append("float")
+                elif opcode == "strb":
+                    f.parameters_type.append("char")
+                elif opcode == "vstr.64":
+                    f.parameters_type.append("double")
+                elif opcode == "str":
+                    f.parameters_type.append("int")
+            elif "mov" in opcode:
+                print(lines[i])
+                """
+                    This is too check if the  parameter/register 
+                    has been used before this line in function.
+
+                    z = a
+                    to filter "a" which hasn't been initialised before
+                """
+
+                if getArgs(lines[i])[0] in rhs.keys():
+                    if rhs[getArgs(lines[i])[0]] >= i:
+                        pass
+                    else:
+                        break
+
+                f.parameters.append(getArgs(lines[i])[1])
+                f.parameters_type.append("int")
 
     for i in range(len(lines.keys())):
         if "bl" in lines[i]:
