@@ -19,10 +19,7 @@
 	.fpu vfpv3-d16
 	.type	add, %function
 add:
-	@ args = 0, pretend = 0, frame = 24
-	@ frame_needed = 1, uses_anonymous_args = 0
-	@ link register save eliminated.
-	push	{r7}
+push {r7}
 	sub	sp, sp, #28
 	add	r7, sp, #0
 	vstr.32	s0, [r7, #20]
@@ -51,9 +48,7 @@ add:
 	.fpu vfpv3-d16
 	.type	main, %function
 main:
-	@ args = 0, pretend = 0, frame = 40
-	@ frame_needed = 1, uses_anonymous_args = 0
-	push	{r4, r7, lr}
+push {r4, r7, lr}
 	sub	sp, sp, #44
 	add	r7, sp, #0
 	adr	r4, .L4
@@ -89,7 +84,6 @@ main:
 	nop
 	adds	r7, r7, #44
 	mov	sp, r7
-	@ sp needed
 	pop	{r4, r7, pc}
 .L5:
 	.align	3
