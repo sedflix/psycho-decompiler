@@ -97,35 +97,35 @@ def isBranching(text):
         return True
     return False
 
+def removeSpaces(text):
+    text = text.replace("\t"," ")
+    text = text.strip(" ")
+    i = 0
+    while(i != len(text)-1):
+        if text[i] == " " and text[i+1] == " ":
+            text = text[:i+1]+text[i+2:]
+            continue
+        i += 1
+    return text
 
 def getOpcode(text):
-    text = text.strip(" ")
-    text = text.strip("\t")
-    a = text.find(" ")
-    b = text.find("\t")
-    if (b > 0 and a > b): a = b
-    return text[0:a + 1].strip()
+    text = removeSpaces(text)
+    op = text.split(" ")[0]
+    return op
 
 
 def getArgs(text):
-    text = text.strip(" ")
-    text = text.strip("\t")
-    a = text.find(" ")
-    b = text.find("\t")
-    if b > 0 and a > b: a = b
-    args = text[a + 1:].strip()
-    args = args.split(",")
+    text = removeSpaces(text)
+    op = ''.join(text.split(" ")[1:])
+    args = op.split(",")
     return args
-
 
 def getComparision(cmp, branch):
     vars = getArgs(cmp)
     var1 = vars[0]
     var2 = vars[1]
     cond = getOpcode(branch)[1:]
-
     ans = ""
-
     if cond == "eq":
         ans = (str(var1) + " == " + str(var2))
     elif cond == "lt":
@@ -138,12 +138,7 @@ def getComparision(cmp, branch):
         ans = (str(var1) + " <= " + str(var2))
     elif cond == "ne":
         ans = (str(var1) + " != " + str(var2))
-
     return ans
-
-
-
-
 
 def getOpDesc(text):
     text = text.upper()
@@ -162,10 +157,8 @@ def getOpDesc(text):
     elif opcode == "mov" or opcode == "vmov.f32":
         print(str(args[0]) + " = " + str(args[1]))
     elif opcode == "str":
-        # TODO: this is in stack // why is there a =
         print(str(args[1]) + " = " + str(args[0]))
     elif opcode == "ldr":
-        # get type
         print("int " + str(args[0]) + " = " + str(args[1]))
     elif opcode == "vldr.32":
         print("float " + str(args[0]) + " = " + str(args[1]))
