@@ -61,6 +61,7 @@ def getLoopsAndIfs(filename):
         """
 
         if label.line_no < branch.line_no:
+
             # for loops
             loops.append(Loop(label, branch, cmp))
 
@@ -95,12 +96,15 @@ def getLoopsAndIfs(filename):
 
                 ifs.append(If(cmp=cmp, branch_to_end=branch, end_label=label))
 
+    print("For")
     for loop in loops:
         print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))
 
+    print("IF")
     for If_ in ifs:
         print("Enter at " + str(If_.block1_start_line) + " and exits at " + str(If_.block1_end_line))
 
+    print("If else")
     for ifelse in ifelses:
         print("If enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block1_end_line) +
               " -- Else enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block2_end_line))

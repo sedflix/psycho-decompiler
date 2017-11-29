@@ -15,8 +15,10 @@ class Function(object):
         self.end_line_no = end_line_no
         self.parameters = []
         self.parameters_type = []
+        self.parameters_line_no = []
         self.return_ = []
         self.return_type = []
+        self.return_line_no = []
         self.callers_line_no = []
 
 
@@ -42,17 +44,9 @@ def getRHS(lines, f, before=False):
 
 def getFunctions(filename):
     file = open(filename)
-
-    labels_by_name = dict()
-    labels_by_line_no = dict()
-    cmps = []
-    branches_line_no = dict()
-    branches_label = dict()
-
     lines = dict()
-    variables = []
-
     i = 0
+
     while True:
         line = file.readline().strip().lower()
         if line is '':
@@ -62,38 +56,7 @@ def getFunctions(filename):
         # else:
         #     i = i - 1
         lines[i] = line
-
-        if getOpcode(line) == "str" and getOpcode(lines[i - 1]) == 'movt' and getOpcode(lines[i - 2]) == 'movw':
-            # float
-            # check all of them points to the same register (like r3)
-            # record stack address
-            # add to variable
-            agrs = getArgs(line)
-
-            print("got a fucking float: " + str(agrs[1]))
-
-            pass
-
-        if getOpcode(line) == "strb" and getOpcode(lines[i - 1]) == "movs":
-            # char
-            # check same register
-            # record stack address
-            # add to variables
-            print("got a char")
-            pass
-
-        if getOpcode(line) == "vldr.32":
-            # loading a float
-            pass
-
-        if getOpcode(line) == "ldrb":
-            # loading a char
-            pass
-
-        # if getOpcode(line)
-
         i += 1
-        pass
 
     # function detection can be done in the following ways:
     # label -> push -> sub, sp, sp #? -> add r7, sp, 0
@@ -215,6 +178,7 @@ def getFunctions(filename):
                     continue
 
                 f.return_.append(getArgs(lines[i])[0])
+                f.return_line_no.append(i)
 
                 if opcode == "vldr.32":
                     f.return_type.append("float")
@@ -241,6 +205,39 @@ def getFunctions(filename):
                     f.return_type.append("int")
 
         print(f.return_type)
+
+    for f in functions:
+
+        if len(f.return_type) == 0:
+            final_str = "void"
+        else:
+            final_str = f.return_type[0]
+
+        final_str = final_str + " " + f.name + " ( "
+        for i in range(len(f.parameters_type)):
+            if not i == 0:
+                final_str = final_str + ", "
+            final_str = final_str + f.parameters_type[i] + " " + f.parameters[i]
+
+        final_str = final_str + " ) { \n"
+
+        for i in range(f.start_line_no + 1, f.end_line_no):
+            """
+                Very weird assumption:
+                do not consider
+            """
+            if not ("sp" in lines[i] or "push" in lines[i] or "pop" in lines[i] or "adds" in lines[i] or "nop" in lines[
+                i]):
+                final_str = final_str + lines[i] + "\n"
+
+        if len(f.return_) == 0:
+            final_str = final_str + "return;"
+        else:
+            final_str = final_str + "return " + f.return_[0]
+
+        final_str = final_str + "\n}"
+
+        print(final_str)
 
     return functions
 
