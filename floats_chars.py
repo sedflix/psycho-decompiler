@@ -244,3 +244,6 @@ def getFunctions(filename):
 
     return functions
 
+
+if __name__ == "__main__":
+    getFunctions("examples/floats.s")

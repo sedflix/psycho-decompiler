@@ -98,8 +98,8 @@ def getLoopsAndIfs(filename):
     for loop in loops:
         print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))
 
-    for If in ifs:
-        print("Enter at " + str(If.block1_start_line) + " and exits at " + str(If.block1_end_line))
+    for If_ in ifs:
+        print("Enter at " + str(If_.block1_start_line) + " and exits at " + str(If_.block1_end_line))
 
     for ifelse in ifelses:
         print("If enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block1_end_line) +
@@ -108,3 +108,7 @@ def getLoopsAndIfs(filename):
     file.close()
 
     return [loops, ifelses, ifs]
+
+
+if __name__ == "__main__":
+    getLoopsAndIfs("examples/sampleinput.s")
