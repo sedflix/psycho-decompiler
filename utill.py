@@ -118,22 +118,58 @@ def getArgs(text):
     return args
 
 
+def getComparision(cmp, branch):
+    vars = getArgs(cmp)
+    var1 = vars[0]
+    var2 = vars[1]
+    cond = getOpcode(branch)[1:]
+
+    ans = ""
+
+    if cond == "eq":
+        ans = (str(var1) + " == " + str(var2))
+    elif cond == "lt":
+        ans = (str(var1) + " < " + str(var2))
+    elif cond == "gt":
+        ans = (str(var1) + " > " + str(var2))
+    elif cond == "ge":
+        ans = (str(var1) + " >= " + str(var2))
+    elif cond == "le":
+        ans = (str(var1) + " <= " + str(var2))
+    elif cond == "ne":
+        ans = (str(var1) + " != " + str(var2))
+
+    return ans
+
+
+
+
+
 def getOpDesc(text):
     text = text.upper()
     args = getArgs(text)
-    if getOpcode(text) == "ADD":
+    opcode = getOpcode(text)
+    if opcode == "add" or opcode == "vadd.f32" or opcode == "vadd.f64":
         print(str(args[0]) + " = " + str(args[1]) + " + " + str(args[2]))
-    elif getOpcode(text) == "SUB":
+    elif opcode == "sub":
         print(str(args[0]) + " = " + str(args[1]) + " - " + str(args[2]))
-    elif getOpcode(text) == "RSB":
+    elif opcode == "rsb":
         print(str(args[0]) + " = " + str(args[2]) + " - " + str(args[1]))
-    elif getOpcode(text) == "AND":
+    elif opcode == "and":
         print(str(args[0]) + " = " + str(args[1]) + " && " + str(args[2]))
-    elif getOpcode(text) == "ORR":
+    elif opcode == "orr":
         print(str(args[0]) + " = " + str(args[1]) + " || " + str(args[2]))
-    elif getOpcode(text) == "MOV":
+    elif opcode == "mov" or opcode == "vmov.f32":
         print(str(args[0]) + " = " + str(args[1]))
-    elif getOpcode(text) == "STR":
+    elif opcode == "str":
+        # TODO: this is in stack // why is there a =
         print(str(args[1]) + " = " + str(args[0]))
-    elif getOpcode(text) == "LDR":
-        print(str(args[0]) + " = " + str(args[1]))
+    elif opcode == "ldr":
+        # get type
+        print("int " + str(args[0]) + " = " + str(args[1]))
+    elif opcode == "vldr.32":
+        print("float " + str(args[0]) + " = " + str(args[1]))
+    elif opcode == "vldr.64":
+        print("double " + str(args[0]) + " = " + str(args[1]))
+    elif opcode == "ldrb":
+        print("char " + str(args[0]) + " = " + str(args[1]))

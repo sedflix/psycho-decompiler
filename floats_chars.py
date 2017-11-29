@@ -75,3 +75,8 @@ if __name__ == '__main__':
                         if x[2] == y[2]:
                             print("ends @" + lines[j])
             pass
+
+    for i in range(len(lines.keys())):
+        if isBranching(lines[i]):
+            print(lines[i])
+            print(getOpcode(lines[i]))
