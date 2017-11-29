@@ -1,0 +1,7 @@
+scanf("%d",&a1);
+int var0=a1;
+scanf("%d",&a1);
+int var1=a1;
+int output=a1;
+printf("%d",&output);
+return 0;
