@@ -15,17 +15,6 @@ tempCounter=0
 with open(filename) as lines:
     for line in lines:
         code.append(line)
-        # if(tempCounter!=0 and flag=='y'):
-        #     currLine=code[tempCounter].split()
-        #     register=currLine[1]
-        #     register=register.replace(",","")
-        #     if register not in usedVariables:
-        #         usedVariables[register]="var"+str(pseudoVariableCount)
-        #         pseudoVariableCount+=1
-        #         toAppend='int '+str(usedVariables[register])+'='+str(convertedCodeVariable)
-        #     converted.append(toAppend)
-        #     print(converted)
-        #     flag='n'
         if checkswi in line:
             io=line.split()
             if io[1]==inputcode:

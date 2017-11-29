@@ -40,8 +40,8 @@ def getRHS(lines, f, before=False):
     return rhs
 
 
-if __name__ == '__main__':
-    file = open('examples/chars.s')
+def getFunctions(filename):
+    file = open(filename)
 
     labels_by_name = dict()
     labels_by_line_no = dict()
@@ -241,3 +241,6 @@ if __name__ == '__main__':
                     f.return_type.append("int")
 
         print(f.return_type)
+
+    return functions
+

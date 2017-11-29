@@ -1,7 +1,7 @@
 from utill import *
 
-if __name__ == '__main__':
-    file = open('examples/sampleinput.s')
+def getLoopsAndIfs(filename):
+    file = open(filename)
 
     labels_by_name = dict()
     labels_by_line_no = dict()
@@ -106,3 +106,5 @@ if __name__ == '__main__':
               " -- Else enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block2_end_line))
 
     file.close()
+
+    return [loops, ifelses, ifs]
