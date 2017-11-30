@@ -1,5 +1,5 @@
-from floats_chars import *
 from DetectingLoops import *
+from FunctionDetection import *
 
 fl = open("op.s", "w")
 
