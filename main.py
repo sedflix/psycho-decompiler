@@ -1,19 +1,31 @@
-from utill import *
+from DetectingLoops import getLoopsAndIfs
 
 rzero = 0
-nest = 0
+cond = 0
+loop = 0
+tocmp = []
+ifbranch = ""
 
 def main(filename):
     op = open(filename)
     fn = open("op.s", "w")
     ln = op.readlines()
-    getLoop(ln)
+    #getLoop(ln)
     for l in ln:
         l = l.lower()
         l = removeSpaces(l)
-        if isComment(l) or isDotted(l):
-            code = "ignored sad ://"
-        elif isMove(l):
+        tabs = "  " * (cond+loop)
+        fn.write(tabs)
+        if tocmp != []:
+            fn.write(getBranch(l) + "\n")
+        elif isIf(l):
+            getIf(l)
+        elif isBranching(l):
+            if cond == 1:
+                endIf(l)
+            elif loop == 1:
+                startLoop(l)
+        if isMove(l):
             fn.write(getMove(l) + "\n")
         elif isInterrupt(l):
             fn.write(getInterrupt(l) + "\n")
@@ -49,51 +61,8 @@ def getArgs(text):
             args[i] = args[i][1:]
     return args
 
-def getLoop(lines):
-    loops = []
-    ifs = []
-    ifelses = []
-    labels_by_name = dict()
-    labels_by_line_no = dict()
-    cmps = []
-    branches_line_no = dict()
-    branches_label = dict()
-    i = 0
-    for line in lines:
-        if isLabel(line):
-            label = Label(i, line)
-            labels_by_name[label.text] = label
-            labels_by_line_no[i] = label
-        elif isComparison(line):
-            cmps.append(CMP(i, line))
-        elif isBranching(line):
-            branch = Branch(i, line)
-            branches_label[branch.label_text] = branch
-            branches_line_no[i] = branch
-        i += 1
-    for cmp in cmps:
-        cmp_line_no = cmp.line_no
-        branch = branches_line_no[cmp_line_no + 1]
-        label = labels_by_name[branch.label_text]
-        branch.label = label
-        if label.line_no < branch.line_no:
-            loops.append(Loop(label, branch, cmp))
-        else:
-            if label.line_no - 1 in branches_line_no.keys():
-                branch2End = branches_line_no[label.line_no - 1]
-                label2End = labels_by_name[branch2End.label_text]
-                ifelses.append(IfElse(cmp=cmp, branch_to_2nd_block=branch,branch_to_end=branch2End, block2_label=label, end_label=label2End))
-            else:
-                ifs.append(If(cmp=cmp, branch_to_end=branch, end_label=label))
-    for loop in loops:
-        print("Enter at " + str(loop.enterNode) + " and exits at " + str(loop.exitNode))
+#def getLoop(lines):
 
-    for If in ifs:
-        print("Enter at " + str(If.block1_start_line) + " and exits at " + str(If.block1_end_line))
-
-    for ifelse in ifelses:
-        print("If enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block1_end_line) +
-              " -- Else enter at " + str(ifelse.block1_start_line) + " and exits at " + str(ifelse.block2_end_line))
 
 def isComment(text):
     cmt = getOpcode(text)
@@ -118,6 +87,55 @@ def isLabel(text):
     if brn[-1] == ":":
         return True
     return False
+
+def isIf(text):
+    cmp = getOpcode(text)
+    if cmp == "cmp" and loop == 0:
+        return True
+    return False
+
+def getIf(text):
+    args = getArgs(text)
+    global tocmp
+    tocmp = [args[0], args[1]]
+    return
+
+
+def endIf(text):
+    global ifbranch, cond
+    if ifbranch == getOpcode(text)[:-1]:
+        cond = 0
+        ifbranch = ""
+    return
+
+def startLoop(text):
+    global loop, ifbranch
+    loop = 1
+    ifbranch = getOpcode(text)[:-1]
+    return
+
+def getBranch(line):
+    global tocmp, ifbranch, cond
+    var1 = tocmp[0]
+    var2 = tocmp[1]
+    tocmp = []
+    cond = getOpcode(line)[1:]
+    ifbranch = getArgs(line)
+    cond == 1
+    ans = ""
+    if cond == "eq":
+        ans = "if " + str(var1) + " != " + str(var2) + ":"
+    elif cond == "lt":
+        ans = "if " + str(var1) + " >= " + str(var2) + ":"
+    elif cond == "gt":
+        ans = "if " + str(var1) + " <= " + str(var2) + ":"
+    elif cond == "ge":
+        ans = "if " + str(var1) + " < " + str(var2) + ":"
+    elif cond == "le":
+        ans = "if " + str(var1) + " > " + str(var2) + ":"
+    elif cond == "ne":
+        ans = "if " + str(var1) + " == " + str(var2) + ":"
+    return ans
 
 def isInterrupt(line):
     swi = getOpcode(line)
@@ -144,11 +162,11 @@ def isComparison(line):
         return True
     return False
 
-def getComparison(cmp, branch):
-    vars = getArgs(cmp)
+def getComparison(line):
+    vars = getArgs(line)
     var1 = vars[0]
     var2 = vars[1]
-    cond = getOpcode(branch)[1:]
+    cond = getOpcode(line)
     ans = ""
     if cond == "eq":
         ans = (str(var1) + " == " + str(var2))
