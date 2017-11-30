@@ -22,7 +22,6 @@ int main(int argc) {
 
   while (int_2 < 20) {
    int_2 = int_2 + 3;
-
     while (int_1 < 40) {
        if (int_2%2 == 0) {
           float_2 = float_2 + 1;
