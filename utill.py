@@ -63,7 +63,7 @@ class If(object):
         self.block1_end_line = end_label.line_no - 1
 
     def contains(self, i, j):
-        if i > self.block1_start_line and j < self.block1_end_line:
+        if i > self.block1_start_line and j <= self.block1_end_line:
             return True
         return False
 

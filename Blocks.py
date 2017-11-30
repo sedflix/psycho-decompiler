@@ -265,8 +265,21 @@ def getLdStr(text):
         ans = mem + " = " + reg
     return ans
 
+def checkForFloat(lines):
+    for i in range(len(lines)-1):
+        if "movw" in lines[i]:
+            l = lines[i].strip(" ").lower()
+            l2 = lines[i+1].strip(" ").lower()
+            a = getArgs(l2)
+            a1 = a[1].strip(" ")
+            l = l.replace("\n", "") + "." + a1 + "F\n"
+            lines[i] = l
+            lines[i+1] = "@ Float"
+
+
 if __name__ == "__main__":
     lines = open("ip.s").readlines()
+    checkForFloat(lines)
     functions = getFunctions(lines)
     function_list = []
     for f in functions:
