@@ -2,6 +2,7 @@ from DetectingLoops import *
 from FunctionDetection import *
 
 fl = open("op.s", "w")
+functions = []
 
 def writeFunction(f):
     if len(f.return_type) == 0:
@@ -59,6 +60,8 @@ def parse(lines):
         fn = ""
         if isIgnore(l):
             fn = ""
+        elif isBL(l):
+            fn = getBL(l)
         elif isMove(l):
             fn = getMove(l) 
         elif isInterrupt(l):
@@ -135,6 +138,26 @@ def isIgnore(line):
         return True
     return False
 
+def isBL(line):
+    bl = getOpcode(line)
+    if bl == "bl":
+        return True
+    return False
+
+def getBL(text):
+    str = ""
+    args = getArgs(text)[0].split("(")[0]
+    for f in functions:
+        if f.name == args:
+            if len(f.return_) != 0:
+                str = f.return_[0]+"="
+            str = str + f.name + "( "
+            for x in f.parameters:
+                str = str + x + ", "
+            str = str[0:-1]
+            str = str + " );"
+    return str
+
 def isInterrupt(line):
     swi = getOpcode(line)
     if swi == "swi":
@@ -144,7 +167,6 @@ def isInterrupt(line):
 def getInterrupt(line):
     args = getArgs(line)
     ans = ""
-    #global rzero
     if args[0] == "0x6c":
         ans = "r0 = input()"
     elif args[0] == "0x6b":

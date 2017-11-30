@@ -41,6 +41,7 @@ def getLoopsAndIfs(lines):
     for cmp in cmps:
         cmp_line_no = cmp.line_no
         branch = branches_line_no[cmp_line_no + 1]
+        print(labels_by_name)
         label = labels_by_name[branch.label_text]
         branch.label = label
 
