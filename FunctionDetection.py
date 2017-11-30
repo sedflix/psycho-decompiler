@@ -103,11 +103,12 @@ def getFunctions(linex):
                     else:
                         break
 
-                if not getArgs(lines[i])[0][0].isalpha():
+                if getArgs(lines[i])[0].startswith("#"):
                     break
 
+
                 """
-                    To determine the parameter name
+                    To determine the parameter name 
                 """
                 f.parameters.append(getArgs(lines[i])[0])
 
@@ -136,7 +137,7 @@ def getFunctions(linex):
                     else:
                         break
 
-                    if not getArgs(lines[i])[0][0].isalpha():
+                    if not getArgs(lines[i])[0].startswith("#"):
                         break
 
 
