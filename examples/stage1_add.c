@@ -1,4 +1,4 @@
-void main(int agrs) {
+void main() {
     int a = 1;
     int b = 1;
 

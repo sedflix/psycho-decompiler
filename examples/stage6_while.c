@@ -1,4 +1,4 @@
-int main(int agrs) {
+int main() {
 
     int a = 1;
     int c = 2;

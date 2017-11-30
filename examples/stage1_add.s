@@ -19,23 +19,22 @@
 	.fpu vfpv3-d16
 	.type	main, %function
 main:
-	@ args = 0, pretend = 0, frame = 24
+	@ args = 0, pretend = 0, frame = 16
 	@ frame_needed = 1, uses_anonymous_args = 0
 	@ link register save eliminated.
 	push	{r7}
-	sub	sp, sp, #28
+	sub	sp, sp, #20
 	add	r7, sp, #0
-	str	r0, [r7, #4]
 	movs	r3, #1
-	str	r3, [r7, #12]
+	str	r3, [r7, #4]
 	movs	r3, #1
-	str	r3, [r7, #16]
-	ldr	r2, [r7, #12]
-	ldr	r3, [r7, #16]
+	str	r3, [r7, #8]
+	ldr	r2, [r7, #4]
+	ldr	r3, [r7, #8]
 	add	r3, r3, r2
-	str	r3, [r7, #20]
+	str	r3, [r7, #12]
 	nop
-	adds	r7, r7, #28
+	adds	r7, r7, #20
 	mov	sp, r7
 	@ sp needed
 	ldr	r7, [sp], #4
