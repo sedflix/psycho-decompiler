@@ -111,8 +111,8 @@ def getLoopsAndIfs(filename):
 
     file.close()
 
-    return [loops, ifelses, ifs]
+
 
 
 if __name__ == "__main__":
-    getLoopsAndIfs("examples/sampleinput.s")
+    getLoopsAndIfs("examples/everything.s")
