@@ -52,42 +52,51 @@ def getFunctions(filename):
         line = file.readline().strip().lower()
         if line is '':
             break
-        # if not (line.startswith("@") or line.startswith(".")):
-        #     lines[i] = line
-        # else:
-        #     i = i - 1
         lines[i] = line
         i += 1
-
-    # function detection can be done in the following ways:
-    # label -> push -> sub, sp, sp #? -> add r7, sp, 0
-    # or
-    # label -> sub, sp, sp #? -> add r7, sp, 0
-    #
-    # end withs adds r7, r7,  #? -> mov sp, r7
-    # and maybe ldr r7, [sp], #4 -> bx	lr
 
     functions = []
 
     for i in range(len(lines.keys())):
+
+        """
+            Identifying the starts and ends of function
+        """
+
         if isLabel(lines[i]):
             if getOpcode(lines[i + 1]) == "push" and getOpcode(lines[i + 2]) == "sub":
+                """
+                    How to identify start of a function:
+                    function detection can be done in the following ways:
+                    "label" followed by a  "push" followed by  "sub, sp, sp #?" followed by "add r7, sp, 0"
+                """
                 x = getArgs(lines[i + 2])
-                print("start @" + lines[i])
+                print("start @:- " + lines[i])
                 j = i
                 for j in range(i, len(lines.keys())):
+                    """
+                        Identify end of a loop
+                        
+                        end with adds r7, r7,  #? followed by mov sp, r7
+                        ###and maybe ldr r7, [sp], #4  followed by bx	lr
+                    """
                     if getOpcode(lines[j]) == "adds":
                         y = getArgs(lines[j])
                         if x[2] == y[2]:
-                            print("ends @" + lines[j + 1])
+                            """
+                                sp has to be subtracted in the beginning of the function and and added at the end of the function.
+                                This is our main idea to check the start and end of function
+                            """
+                            print("ends @:- " + lines[j + 1])
                             break
+
                 functions.append(Function(
                     name=lines[i].replace(":", ""), start_line_text=lines[i + 1], start_line_no=i + 1,
                     end_line_text=lines[j + 2], end_line_no=j + 2
                 ))
-            pass
 
     for f in functions:
+
         """
                 finding parameters of each function
         """
@@ -98,7 +107,8 @@ def getFunctions(filename):
             opcode = getOpcode(lines[i])
 
             """
-                ASSUMPTION: each argument of a function is first used with "str" or "mov"
+                ASSUMPTION: each argument of a function is first used with "str" or "mov" without initialisation of the same
+                
                 int are usually stored with mov
                 while str for other type of data
                 
@@ -106,20 +116,27 @@ def getFunctions(filename):
 
             if "str" in opcode:
 
-                """
-                    This is too check if the  parameter/register 
-                    has been used before this line in function.
-                    
-                    z = a
-                    to filter "a" which hasn't been initialised before
-                """
                 if getArgs(lines[i])[0] in rhs.keys():
+                    """
+                        This is too check if the  parameter/register 
+                        has been used before this line in function.
+
+                        z = a
+                        to filter "a" which hasn't been initialised before
+                    """
                     if rhs[getArgs(lines[i])[0]] >= i:
                         pass
                     else:
                         break
 
+                """
+                    To determine the parameter name
+                """
                 f.parameters.append(getArgs(lines[i])[0])
+
+                """
+                    Now we determine the type of parameters
+                """
                 if opcode == "vstr.32":
                     f.parameters_type.append("float")
                 elif opcode == "strb":
@@ -129,15 +146,15 @@ def getFunctions(filename):
                 elif opcode == "str":
                     f.parameters_type.append("int")
             elif "mov" in opcode:
-                """
-                    This is too check if the  parameter/register 
-                    has been used before this line in function.
-
-                    z = a
-                    to filter "a" which hasn't been initialised before
-                """
 
                 if getArgs(lines[i])[0] in rhs.keys():
+                    """
+                        This is too check if the  parameter/register 
+                        has been used before this line in function.
+
+                        z = a
+                        to filter "a" which hasn't been initialised before
+                    """
                     if rhs[getArgs(lines[i])[0]] >= i:
                         pass
                     else:
@@ -146,10 +163,12 @@ def getFunctions(filename):
                 f.parameters.append(getArgs(lines[i])[1])
                 f.parameters_type.append("int")
 
-    """
-        Callers 
-    """
     for i in range(len(lines.keys())):
+        """
+               Determine from where the function has been called.
+
+               Works only for "bl" 
+           """
         if "bl" in lines[i]:
             label = getArgs(lines[i])[0].split("(")[0]
 
@@ -170,9 +189,8 @@ def getFunctions(filename):
             opcode = getOpcode(lines[i])
 
             """
-                ASSUMPTION: return type of a function is last used with "str" or "mov"
+                Algo/Assumption: return type of a function is last r0, s0 or d0 used with "str" or "mov"
             """
-
             if "ldr" in opcode:
 
                 if not getArgs(lines[i])[0].endswith("0"):
@@ -181,6 +199,9 @@ def getFunctions(filename):
                 f.return_.append(getArgs(lines[i])[0])
                 f.return_line_no.append(i)
 
+                """
+                    Determine return time
+                """
                 if opcode == "vldr.32":
                     f.return_type.append("float")
                 elif opcode == "ldrb":
@@ -196,6 +217,10 @@ def getFunctions(filename):
                     continue
 
                 f.return_.append(getArgs(lines[i])[0])
+
+                """
+                    Determine return time
+                """
                 if "f32" in opcode:
                     f.return_type.append("float")
                 elif "f64" in opcode:
@@ -206,14 +231,12 @@ def getFunctions(filename):
                     # TODO Detect char
                     f.return_type.append("int")
 
-        print(f.return_atype)
-
-    # from DetectingLoops import *
-    # loops, ifelses, ifs = getLoopsAndIfs(filename)
-    # thingsToConsider = []
+        print(f.return_type)
 
     for f in functions:
-
+        """
+            converting function to string
+        """
         if len(f.return_type) == 0:
             final_str = "void"
         else:
@@ -249,4 +272,4 @@ def getFunctions(filename):
 
 
 if __name__ == "__main__":
-    getFunctions("examples/chars.s")
+    getFunctions("examples/everything.s")
