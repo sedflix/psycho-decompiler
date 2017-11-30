@@ -1,5 +1,17 @@
+r3 = 1
+[r7] = r3
+r3 = 1
+r7_4 = r3
+r3 = [r7]
+r2 = r7_4
+r3 = r3 * r2
+r7_8 = r3
+r3 = r7_4
+r2 = [r7]
+r3 = r3 * r2
+r7_12 = r3
+'''
 from DetectingLoops import getLoopsAndIfs
-
 rzero = 0
 cond = 0
 loop = 0
@@ -237,3 +249,4 @@ def getLdStr(text):
     elif opcode == "ldrb":
         ans = "char " + str(args[0]) + " = " + str(args[1])
     return ans
+'''

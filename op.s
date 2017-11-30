@@ -1,20 +1,22 @@
-r7 = 0
-r0 = 0
-r0 = input()
-r6 = r0
-r1 = 0
-r2 = 1
-[Unimplemented] cmp r6, #0
-[Unimplemented] bne loop
-r6 = 20
-[Unimplemented] loop:
-r1 = r2 + r1
-r2 = r1 - r2
-r0 = 1
-print(r1)
-r0 = ''
+int main (  ) {
 
-r7 = r7 + 1
-[Unimplemented] cmp r7, r6
-[Unimplemented] bne loop
-exit()
+
+r3 = 1
+r7_8 = r3
+r3 = 2
+r7_12 = r3
+
+do { 
+r3 = r7_4
+r3 = r3 + 1
+r7_4 = r3
+
+r2 = r7_8
+r3 = r7_12
+} while (r2 > r3) 
+r0 = r3
+r7 = r7 + 20
+
+
+return r0
+}

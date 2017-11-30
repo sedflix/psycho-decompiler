@@ -30,7 +30,7 @@ def writeBlock(lines):
     i = 0
     for bl in outer:
         j = bl.getStart()
-        parse(lines[i:j])
+        parse(lines[i:j-1])
         if type(bl).__name__ == "Loop":
             writeLoop(bl, lines)
         elif type(bl).__name__ == "If":
@@ -57,7 +57,7 @@ def getOuterBlocks(loops, ifs):
 def parse(lines):
     for l in lines:
         fn = ""
-        if isSp(l):
+        if isIgnore(l):
             fn = ""
         elif isMove(l):
             fn = getMove(l) 
@@ -70,23 +70,17 @@ def parse(lines):
         elif isLdStr(l):
             fn = getLdStr(l)
         else:
-            fn = "[Unimplemented] " + l
+            fn = ""
         fl.write(fn + "\n")
 
 def writeIf(ifx, l):
-    for i in range(0, ifx.block1_start_line-3):
-        parse([removeSpaces(l[i])])
     vl = getArgs(removeSpaces(l[ifx.block1_start_line-3]))
     op = getOpcode(removeSpaces(l[ifx.block1_start_line-2]))
     fl.write("if (" + branch_statement(vl, op) + ") { \n")
-    l = l[ifx.block1_start_line:ifx.block1_end_line]
+    writeBlock(l[ifx.block1_start_line:ifx.block1_end_line])
     fl.write("} \n")
-    for i in range(ifx.block1_end_line+1, len(l)):
-        fl.write(removeSpaces(l[i]) + "\n")
 
 def writeLoop(loop, l):
-    for i in range(0, loop.enterNode-1):
-        fl.write(removeSpaces(l[i]) + "\n")
     fl.write("do { \n")
     writeBlock(l[loop.enterNode: loop.exitNode-2])
     vl = getArgs(removeSpaces(l[loop.exitNode-2]))
@@ -131,8 +125,15 @@ def branch_statement_2(vl, cond):
         ans = str(var1) + " != " + str(var2)
     return ans
 
-def isSp(line):
-    return "sp" in line
+def isIgnore(line):
+    if "sp" in line:
+        return True
+    line = removeSpaces(line)
+    if line[0] == "." or line[0]  == "@":
+        return True
+    if "nop" in line:
+        return True
+    return False
 
 def isInterrupt(line):
     swi = getOpcode(line)
@@ -181,7 +182,7 @@ def getComparison(line):
 
 def isArithLogical(text):
     comp = getOpcode(text)
-    comparisons = ["add", "sub", "rsb", "and", "orr"]
+    comparisons = ["add", "sub", "rsb", "mul", "and", "orr"]
     for c in comparisons:
         if c in comp:
             return True
@@ -197,6 +198,8 @@ def getArithLogical(text):
         ans = str(args[0]) + " = " + str(args[1]) + " - " + str(args[2])
     elif "rsb" in opcode:
         ans = str(args[0]) + " = " + str(args[2]) + " - " + str(args[1])
+    elif "mul" in opcode:
+        ans = str(args[0]) + " = " + str(args[2]) + " * " + str(args[1])
     elif "and" in opcode:
         ans = str(args[0]) + " = " + str(args[1]) + " && " + str(args[2])
     elif "orr" in opcode:
@@ -226,9 +229,12 @@ def isLdStr(text):
 def getLdStr(text):
     args = getArgs(text)
     reg = args[0]
-    mem1 = args[1]
-    mem2 = args[2]
-    mem = mem1[1:] + "_" + mem2[:-1]
+    if len(args) > 2:
+        mem1 = args[1]
+        mem2 = args[2]
+        mem = mem1[1:] + "_" + mem2[:-1]
+    else:
+        mem = args[1]
     opcode = getOpcode(text)
     ans = ""
     if "ldr" in opcode:
