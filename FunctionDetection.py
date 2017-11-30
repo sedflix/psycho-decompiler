@@ -103,6 +103,9 @@ def getFunctions(linex):
                     else:
                         break
 
+                if not getArgs(lines[i])[0][0].isalpha():
+                    break
+
                 """
                     To determine the parameter name
                 """
@@ -132,6 +135,11 @@ def getFunctions(linex):
                         pass
                     else:
                         break
+
+                    if not getArgs(lines[i])[0][0].isalpha():
+                        break
+
+
                 f.parameters.append(getArgs(lines[i])[1])
                 f.parameters_type.append("int")
     for i in range(len(lines.keys())):
