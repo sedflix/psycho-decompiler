@@ -41,18 +41,37 @@ class Loop(object):
         self.enterNode = label.line_no
         self.exitNode = branch.line_no
 
+    def getStart(self):
+        return self.enterNode
+
+    def getEnd(self):
+        return self.exitNode
+
+    def contains(self, i, j):
+        if i > self.enterNode and j < self.exitNode:
+            return True
+        return False
+
 
 class If(object):
     def __init__(self, cmp, branch_to_end, end_label):
         self.cmp = cmp
-
         self.cmp_branch = branch_to_end
         self.branch_to_end = branch_to_end
-
         self.end_label = end_label
-
         self.block1_start_line = branch_to_end.line_no + 1
         self.block1_end_line = end_label.line_no - 1
+
+    def contains(self, i, j):
+        if i > self.block1_start_line and j < self.block1_end_line:
+            return True
+        return False
+
+    def getStart(self):
+        return self.block1_start_line
+
+    def getEnd(self):
+        return self.block1_end_line
 
 
 class IfElse(object):
@@ -85,7 +104,7 @@ def isConditional(text):
     text = getOpcode(text)
     # if text.endswith("s"):
     #     return True
-    print(text)
+    # print(text)
     if text in conditionals:
         return True
     return False
@@ -93,13 +112,14 @@ def isConditional(text):
 
 # TODO: make this more robust
 def isBranching(text):
-    if text.strip().startswith("b"):
+    if text.startswith("b"):
         return True
     return False
 
 def removeSpaces(text):
     text = text.replace("\t"," ")
     text = text.strip(" ")
+    text = text.strip("\n")
     i = 0
     while(i != len(text)-1):
         if text[i] == " " and text[i+1] == " ":
@@ -118,9 +138,13 @@ def getArgs(text):
     text = removeSpaces(text)
     op = ''.join(text.split(" ")[1:])
     args = op.split(",")
+    for i in range(len(args)):
+        args[i].strip(" ")
+        if args[i][0] == "#":
+            args[i] = args[i][1:]
     return args
 
-def getComparision(cmp, branch):
+def getComparison(cmp, branch):
     vars = getArgs(cmp)
     var1 = vars[0]
     var2 = vars[1]
@@ -140,6 +164,7 @@ def getComparision(cmp, branch):
         ans = (str(var1) + " != " + str(var2))
     return ans
 
+'''
 def getOpDesc(text):
     text = text.upper()
     args = getArgs(text)
@@ -166,3 +191,4 @@ def getOpDesc(text):
         print("double " + str(args[0]) + " = " + str(args[1]))
     elif opcode == "ldrb":
         print("char " + str(args[0]) + " = " + str(args[1]))
+'''
