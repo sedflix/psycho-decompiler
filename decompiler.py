@@ -1,4 +1,3 @@
-from DetectingLoops import *
 from FunctionDetection import *
 
 fl = open("op.s", "w")
@@ -276,12 +275,21 @@ def checkForFloat(lines):
             lines[i] = l
             lines[i+1] = "@ Float"
 
-
 if __name__ == "__main__":
-    lines = open("ip.s").readlines()
+
+    # input
+    lines = open("in.s").readlines()
+
+    # data type check
     checkForFloat(lines)
+
+    # identifying all the functions
     functions = getFunctions(lines)
+
     function_list = []
     for f in functions:
+
         func_scope = lines[f.start_line_no:f.end_line_no+1]
+
+        # translating code within the function f
         writeFunction(f)
