@@ -1,6 +1,6 @@
 # psycho-decompiler
-Pyscho as in [Pyscho Killer](https://www.youtube.com/watch?v=yX6FsTIq6ls). 
-It converts ARM code to corresponding pseudo code. 
+It converts ARM code to corresponding pseudo code.  
+PS: Pyscho as in [Pyscho Killer](https://www.youtube.com/watch?v=yX6FsTIq6ls).  
 
 ## How to use it
 
