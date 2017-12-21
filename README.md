@@ -40,4 +40,4 @@ ARM uses different kinds of `ldr`, `str`, `mov`, `add`, `sub`, `mul`, `div` for 
 Places where `swi` is used, it is checked whether the next token is code for read, write or exit(0x6c, 0x6b or 0x11) ​ then the decompiled code (scanf, printf or exit) is added to a  s
 
 
-Pyscho as in (Pyscho Killer)[https://www.youtube.com/watch?v=yX6FsTIq6ls]. 
+Pyscho as in [Pyscho Killer](https://www.youtube.com/watch?v=yX6FsTIq6ls). 
